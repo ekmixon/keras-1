@@ -48,6 +48,7 @@ https://www.manythings.org/anki/
     RNN Encoder-Decoder for Statistical Machine Translation
     https://arxiv.org/abs/1406.1078
 '''
+
 from __future__ import print_function
 
 from keras.models import Model
@@ -85,8 +86,8 @@ input_characters = sorted(list(input_characters))
 target_characters = sorted(list(target_characters))
 num_encoder_tokens = len(input_characters)
 num_decoder_tokens = len(target_characters)
-max_encoder_seq_length = max([len(txt) for txt in input_texts])
-max_decoder_seq_length = max([len(txt) for txt in target_texts])
+max_encoder_seq_length = max(len(txt) for txt in input_texts)
+max_decoder_seq_length = max(len(txt) for txt in target_texts)
 
 print('Number of samples:', len(input_texts))
 print('Number of unique input tokens:', num_encoder_tokens)
@@ -175,10 +176,8 @@ decoder_model = Model(
 
 # Reverse-lookup token index to decode sequences back to
 # something readable.
-reverse_input_char_index = dict(
-    (i, char) for char, i in input_token_index.items())
-reverse_target_char_index = dict(
-    (i, char) for char, i in target_token_index.items())
+reverse_input_char_index = {i: char for char, i in input_token_index.items()}
+reverse_target_char_index = {i: char for char, i in target_token_index.items()}
 
 
 def decode_sequence(input_seq):

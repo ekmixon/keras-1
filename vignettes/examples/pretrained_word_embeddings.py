@@ -11,6 +11,7 @@ https://nlp.stanford.edu/data/glove.6B.zip
 https://www.cs.cmu.edu/afs/cs.cmu.edu/project/theo-20/www/data/news20.html
 '''
 
+
 from __future__ import print_function
 
 import os
@@ -26,8 +27,8 @@ from tensorflow.contrib.keras.api.keras.models import Model
 
 
 BASE_DIR = '.'
-GLOVE_DIR = BASE_DIR + '/glove.6B/'
-TEXT_DATA_DIR = BASE_DIR + '/20_newsgroup/'
+GLOVE_DIR = f'{BASE_DIR}/glove.6B/'
+TEXT_DATA_DIR = f'{BASE_DIR}/20_newsgroup/'
 MAX_SEQUENCE_LENGTH = 1000
 MAX_NUM_WORDS = 20000
 EMBEDDING_DIM = 100
@@ -39,15 +40,13 @@ VALIDATION_SPLIT = 0.2
 print('Indexing word vectors.')
 
 embeddings_index = {}
-f = open(os.path.join(GLOVE_DIR, 'glove.6B.100d.txt'))
-for line in f:
-    values = line.split()
-    word = values[0]
-    coefs = np.asarray(values[1:], dtype='float32')
-    embeddings_index[word] = coefs
-f.close()
-
-print('Found %s word vectors.' % len(embeddings_index))
+with open(os.path.join(GLOVE_DIR, 'glove.6B.100d.txt')) as f:
+    for line in f:
+        values = line.split()
+        word = values[0]
+        coefs = np.asarray(values[1:], dtype='float32')
+        embeddings_index[word] = coefs
+print(f'Found {len(embeddings_index)} word vectors.')
 
 # second, prepare text samples and their labels
 print('Processing text dataset')
@@ -69,13 +68,13 @@ for name in sorted(os.listdir(TEXT_DATA_DIR)):
                     f = open(fpath, encoding='latin-1')
                 t = f.read()
                 i = t.find('\n\n')  # skip header
-                if 0 < i:
+                if i > 0:
                     t = t[i:]
                 texts.append(t)
                 f.close()
                 labels.append(label_id)
 
-print('Found %s texts.' % len(texts))
+print(f'Found {len(texts)} texts.')
 
 # finally, vectorize the text samples into a 2D integer tensor
 tokenizer = Tokenizer(num_words=MAX_NUM_WORDS)
@@ -83,7 +82,7 @@ tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
 
 word_index = tokenizer.word_index
-print('Found %s unique tokens.' % len(word_index))
+print(f'Found {len(word_index)} unique tokens.')
 
 data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
 

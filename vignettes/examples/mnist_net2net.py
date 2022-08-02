@@ -123,7 +123,7 @@ def wider2net_conv2d(teacher_w1, teacher_b1, teacher_w2, new_width, init):
         new_b1 = teacher_b1[index]
         new_w2 = teacher_w2[:, index, :, :] / factors.reshape((1, -1, 1, 1))
     else:
-        raise ValueError('Unsupported weight initializer: %s' % init)
+        raise ValueError(f'Unsupported weight initializer: {init}')
 
     student_w1 = np.concatenate((teacher_w1, new_w1), axis=0)
     if init == 'random-pad':
@@ -173,7 +173,7 @@ def wider2net_fc(teacher_w1, teacher_b1, teacher_w2, new_width, init):
         new_b1 = teacher_b1[index]
         new_w2 = teacher_w2[index, :] / factors[:, np.newaxis]
     else:
-        raise ValueError('Unsupported weight initializer: %s' % init)
+        raise ValueError(f'Unsupported weight initializer: {init}')
 
     student_w1 = np.concatenate((teacher_w1, new_w1), axis=1)
     if init == 'random-pad':
@@ -306,7 +306,7 @@ def make_deeper_student_model(teacher_model, train_data,
     elif init == 'random-init':
         model.add(Conv2D(64, 3, padding='same', name='conv2-deeper'))
     else:
-        raise ValueError('Unsupported weight initializer: %s' % init)
+        raise ValueError(f'Unsupported weight initializer: {init}')
     model.add(MaxPooling2D(2, name='pool2'))
     model.add(Flatten(name='flatten'))
     model.add(Dense(64, activation='relu', name='fc1'))
@@ -318,7 +318,7 @@ def make_deeper_student_model(teacher_model, train_data,
     elif init == 'random-init':
         model.add(Dense(64, activation='relu', name='fc1-deeper'))
     else:
-        raise ValueError('Unsupported weight initializer: %s' % init)
+        raise ValueError(f'Unsupported weight initializer: {init}')
     model.add(Dense(num_class, activation='softmax', name='fc2'))
 
     # copy weights for other layers

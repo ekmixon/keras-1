@@ -98,10 +98,7 @@ def paint_text(text, w, h, rotate=False, ud=False, multi_fonts=False):
         max_shift_x = w - box[2] - border_w_h[0]
         max_shift_y = h - box[3] - border_w_h[1]
         top_left_x = np.random.randint(0, int(max_shift_x))
-        if ud:
-            top_left_y = np.random.randint(0, int(max_shift_y))
-        else:
-            top_left_y = h // 2
+        top_left_y = np.random.randint(0, int(max_shift_y)) if ud else h // 2
         context.move_to(top_left_x - int(box[0]), top_left_y - int(box[1]))
         context.set_source_rgb(0, 0, 0)
         context.show_text(text)
@@ -121,7 +118,7 @@ def paint_text(text, w, h, rotate=False, ud=False, multi_fonts=False):
 
 def shuffle_mats_or_lists(matrix_list, stop_ind=None):
     ret = []
-    assert all([len(i) == len(matrix_list[0]) for i in matrix_list])
+    assert all(len(i) == len(matrix_list[0]) for i in matrix_list)
     len_val = len(matrix_list[0])
     if stop_ind is None:
         stop_ind = len_val
@@ -212,9 +209,9 @@ class TextImageGenerator(keras.callbacks.Callback):
                 if len(tmp_string_list) == self.num_words:
                     break
                 columns = line.lower().split()
-                word = columns[0] + ' ' + columns[1]
+                word = f'{columns[0]} {columns[1]}'
                 if is_valid_str(word) and \
-                        (max_string_len == -1 or max_string_len is None or len(word) <= max_string_len):
+                            (max_string_len == -1 or max_string_len is None or len(word) <= max_string_len):
                     tmp_string_list.append(word)
         if len(tmp_string_list) != self.num_words:
             raise IOError('Could not pull enough words from supplied monogram and bigram files. ')
@@ -245,7 +242,7 @@ class TextImageGenerator(keras.callbacks.Callback):
         input_length = np.zeros([size, 1])
         label_length = np.zeros([size, 1])
         source_str = []
-        for i in range(0, size):
+        for i in range(size):
             # Mix in some blank inputs.  This seems to be important for
             # achieving translational invariance
             if train and i > size - 4:
@@ -362,8 +359,8 @@ class VizCallback(keras.callbacks.Callback):
         while num_left > 0:
             word_batch = next(self.text_img_gen)[0]
             num_proc = min(word_batch['the_input'].shape[0], num_left)
-            decoded_res = decode_batch(self.test_func, word_batch['the_input'][0:num_proc])
-            for j in range(0, num_proc):
+            decoded_res = decode_batch(self.test_func, word_batch['the_input'][:num_proc])
+            for j in range(num_proc):
                 edit_dist = editdistance.eval(decoded_res[j], word_batch['source_str'][j])
                 mean_ed += float(edit_dist)
                 mean_norm_ed += float(edit_dist) / len(word_batch['source_str'][j])
@@ -377,11 +374,11 @@ class VizCallback(keras.callbacks.Callback):
         self.model.save_weights(os.path.join(self.output_dir, 'weights%02d.h5' % (epoch)))
         self.show_edit_distance(256)
         word_batch = next(self.text_img_gen)[0]
-        res = decode_batch(self.test_func, word_batch['the_input'][0:self.num_display_words])
-        if word_batch['the_input'][0].shape[0] < 256:
-            cols = 2
-        else:
-            cols = 1
+        res = decode_batch(
+            self.test_func, word_batch['the_input'][: self.num_display_words]
+        )
+
+        cols = 2 if word_batch['the_input'][0].shape[0] < 256 else 1
         for i in range(self.num_display_words):
             pylab.subplot(self.num_display_words // cols, cols, i + 1)
             if K.image_data_format() == 'channels_first':

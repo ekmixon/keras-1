@@ -49,10 +49,7 @@ def cnn_layers(inputs):
     x = layers.Flatten()(x)
     x = layers.Dense(512, activation='relu')(x)
     x = layers.Dropout(0.5)(x)
-    predictions = layers.Dense(classes,
-                               activation='softmax',
-                               name='x_train_out')(x)
-    return predictions
+    return layers.Dense(classes, activation='softmax', name='x_train_out')(x)
 
 
 batch_size = 128

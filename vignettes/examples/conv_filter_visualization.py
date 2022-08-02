@@ -59,6 +59,9 @@ def normalize(x):
 
 
 kept_filters = []
+# step size for gradient ascent
+step = 1.
+
 for filter_index in range(200):
     # we only scan through the first 200 filters,
     # but there are actually 512 of them
@@ -82,9 +85,6 @@ for filter_index in range(200):
     # this function returns the loss and grads given the input picture
     iterate = K.function([input_img], [loss, grads])
 
-    # step size for gradient ascent
-    step = 1.
-
     # we start from a gray image with some random noise
     if K.image_data_format() == 'channels_first':
         input_img_data = np.random.random((1, 3, img_width, img_height))
@@ -93,7 +93,7 @@ for filter_index in range(200):
     input_img_data = (input_img_data - 0.5) * 20 + 128
 
     # we run gradient ascent for 20 steps
-    for i in range(20):
+    for _ in range(20):
         loss_value, grads_value = iterate([input_img_data])
         input_img_data += grads_value * step
 
@@ -115,7 +115,7 @@ n = 8
 # the filters that have the highest loss are assumed to be better-looking.
 # we will only keep the top 64 filters.
 kept_filters.sort(key=lambda x: x[1], reverse=True)
-kept_filters = kept_filters[:n * n]
+kept_filters = kept_filters[:n**2]
 
 # build a black picture with enough space for
 # our 8 x 8 filters of size 128 x 128, with a 5px margin in between

@@ -16,6 +16,7 @@ Note that the relative performance of the different implementations can
 vary depending on your device, your model and the size of your data.
 '''
 
+
 import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,7 +41,7 @@ X_test = sequence.pad_sequences(X_test, max_length)
 # Compile and train different models while meauring performance.
 results = []
 for mode in modes:
-    print('Testing mode: implementation={}'.format(mode))
+    print(f'Testing mode: implementation={mode}')
 
     model = Sequential()
     model.add(Embedding(max_features, embedding_dim,

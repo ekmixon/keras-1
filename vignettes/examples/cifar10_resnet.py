@@ -223,9 +223,7 @@ def resnet_v1(input_shape, depth, num_classes=10):
                     activation='softmax',
                     kernel_initializer='he_normal')(y)
 
-    # Instantiate model.
-    model = Model(inputs=inputs, outputs=outputs)
-    return model
+    return Model(inputs=inputs, outputs=outputs)
 
 
 def resnet_v2(input_shape, depth, num_classes=10):
@@ -309,9 +307,7 @@ def resnet_v2(input_shape, depth, num_classes=10):
                     activation='softmax',
                     kernel_initializer='he_normal')(y)
 
-    # Instantiate model.
-    model = Model(inputs=inputs, outputs=outputs)
-    return model
+    return Model(inputs=inputs, outputs=outputs)
 
 
 if version == 2:

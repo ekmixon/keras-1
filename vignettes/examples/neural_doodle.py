@@ -194,7 +194,7 @@ image_model = vgg19.VGG19(include_top=False, input_tensor=images)
 mask_input = Input(tensor=masks, shape=(None, None, None), name='mask_input')
 x = mask_input
 for layer in image_model.layers[1:]:
-    name = 'mask_%s' % layer.name
+    name = f'mask_{layer.name}'
     if 'conv' in layer.name:
         x = AveragePooling2D((3, 3), strides=(
             1, 1), name=name, border_mode='same')(x)
@@ -207,7 +207,7 @@ image_features = {}
 mask_features = {}
 for img_layer, mask_layer in zip(image_model.layers, mask_model.layers):
     if 'conv' in img_layer.name:
-        assert 'mask_' + img_layer.name == mask_layer.name
+        assert f'mask_{img_layer.name}' == mask_layer.name
         layer_name = img_layer.name
         img_feat, mask_feat = img_layer.output, mask_layer.output
         image_features[layer_name] = img_feat
@@ -218,8 +218,7 @@ for img_layer, mask_layer in zip(image_model.layers, mask_model.layers):
 def gram_matrix(x):
     assert K.ndim(x) == 3
     features = K.batch_flatten(x)
-    gram = K.dot(features, K.transpose(features))
-    return gram
+    return K.dot(features, K.transpose(features))
 
 
 def region_style_loss(style_image, target_image, style_mask, target_mask):
